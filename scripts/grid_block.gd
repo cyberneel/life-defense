@@ -1,10 +1,10 @@
 extends Area2D
 
 @export_category("Grid Block")
-@export var is_alive: bool = false
 @export var alive_color: Color = Color(1, 0, 0)
 @export var dead_color: Color = Color(.25, .25, .25)
 
+var is_alive: bool = false
 var parentSprite: Sprite2D
 
 # Called when the node enters the scene tree for the first time.

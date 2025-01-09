@@ -9,3 +9,7 @@ script = ExtResource("2_i5ch3")
 grid_size = 20
 block_size = 5
 padding_px = 5
+
+[node name="Simulate Next Step" type="Timer" parent="Grid Spawner"]
+
+[connection signal="timeout" from="Grid Spawner/Simulate Next Step" to="Grid Spawner" method="_on_simulate_next_step"]

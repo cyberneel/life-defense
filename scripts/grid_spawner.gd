@@ -5,7 +5,12 @@ extends Node2D
 @export_range(1, 10) var block_size: int = 10
 @export var padding_px: int = 10
 
+@export_category("Game Settings")
+@export var update_interval: int = 3
+
 @onready var block_preload = preload("res://scenes/presets/grid_block.tscn")
+
+var block_states: Array[bool]
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
@@ -24,9 +29,17 @@ func _ready() -> void:
 			block.scale.x = block_size
 			block.scale.y = block_size
 			add_child(block)
+			block_states.append(false)
+			
+	$"Simulate Next Step".start(update_interval)
 	pass
 
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta: float) -> void:
+	pass
+	
+# Simulation Update
+func _on_simulate_next_step() -> void:
+	print("Sim")
 	pass
