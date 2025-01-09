@@ -11,7 +11,7 @@ extends Node2D
 func _ready() -> void:
 	var window_width: int = DisplayServer.screen_get_size().x
 	var grid_midpoint: int = (block_size * 10 + padding_px) * grid_size / 2.0
-	position.x = 480 - (grid_midpoint / 2.0)
+	position.x = (640 - (182.5 * grid_size/15)) - (grid_midpoint / 2.0)
 	position.y = position.x
 	
 	var block_pos: Vector2 = Vector2.ZERO

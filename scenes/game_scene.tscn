@@ -6,6 +6,6 @@
 
 [node name="Grid Spawner" type="Node2D" parent="."]
 script = ExtResource("2_i5ch3")
-grid_size = 15
+grid_size = 20
 block_size = 5
 padding_px = 5
