@@ -20,6 +20,7 @@ func _ready() -> void:
 	position.y = position.x
 	
 	var block_pos: Vector2 = Vector2.ZERO
+	var block_num: int = 0
 	for x in grid_size:
 		block_pos.x = (x * ((block_size * 10) + padding_px))
 		for y in grid_size:
@@ -28,6 +29,8 @@ func _ready() -> void:
 			block.position = block_pos
 			block.scale.x = block_size
 			block.scale.y = block_size
+			block.name = str(block_num)
+			block_num += 1
 			add_child(block)
 			block_states.append(false)
 			
