@@ -4,6 +4,8 @@ extends Area2D
 @export var alive_color: Color = Color(1, 0, 0)
 @export var dead_color: Color = Color(.25, .25, .25)
 
+signal block_state_toggled(num: int, state: bool)
+
 var is_alive: bool = false
 var parentSprite: Sprite2D
 
@@ -25,6 +27,7 @@ func _on_input_event(viewport: Node, event: InputEvent, shape_idx: int) -> void:
 func toggle_state() -> void:
 	is_alive = !is_alive
 	update_state()
+	emit_signal("block_state_toggled", parentSprite.name.to_int(), is_alive)
 	
 func update_state() -> void:
 	var status_color: Color = alive_color if is_alive else dead_color

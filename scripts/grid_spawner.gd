@@ -31,6 +31,7 @@ func _ready() -> void:
 			block.scale.y = block_size
 			block.name = str(block_num)
 			block_num += 1
+			block.get_node("Area2D").block_state_toggled.connect(_on_block_clicked)
 			add_child(block)
 			block_states.append(false)
 			
@@ -46,3 +47,21 @@ func _process(delta: float) -> void:
 func _on_simulate_next_step() -> void:
 	print("Sim")
 	pass
+	
+# When a block is clicked
+func _on_block_clicked(num: int, state: bool) -> void:
+	block_states[num] = state
+	print(str(num) + ": " + str(state))
+	pass
+	
+# Used for converting 2d index to 1d
+func get_block_idx_from_2d(x: int, y: int) -> int:
+	var idx: int = (grid_size * x) + y
+	return idx
+	
+func get_block_2d_from_idx(idx: int) -> Vector2i:
+	var pos2d: Vector2i = Vector2i.ZERO
+	pos2d.x = floor(idx / grid_size)
+	idx = idx % grid_size
+	pos2d.y = floor(idx)
+	return pos2d
