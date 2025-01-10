@@ -4,13 +4,34 @@
 
 [node name="Game Scene" type="Node2D"]
 
-[node name="Grid Spawner" type="Node2D" parent="."]
+[node name="Grid Spawner" type="Node2D" parent="." node_paths=PackedStringArray("sim_timer_text")]
 script = ExtResource("2_i5ch3")
 grid_size = 20
 block_size = 5
 padding_px = 5
 update_interval = 5
+sim_timer_text = NodePath("../MarginContainer/Sim Step Timer Text")
 
 [node name="Simulate Next Step" type="Timer" parent="Grid Spawner"]
+
+[node name="MarginContainer" type="MarginContainer" parent="."]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = 11.0
+offset_top = 8.00006
+offset_right = 269.0
+offset_bottom = 31.0001
+grow_horizontal = 2
+grow_vertical = 2
+scale = Vector2(2.36303, 2.72768)
+size_flags_horizontal = 4
+size_flags_vertical = 4
+
+[node name="Sim Step Timer Text" type="Label" parent="MarginContainer"]
+layout_mode = 2
+text = "Next Sim in: 5s"
 
 [connection signal="timeout" from="Grid Spawner/Simulate Next Step" to="Grid Spawner" method="_on_simulate_next_step"]

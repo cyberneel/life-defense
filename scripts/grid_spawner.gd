@@ -7,6 +7,8 @@ extends Node2D
 
 @export_category("Game Settings")
 @export var update_interval: int = 3
+@export var sim_timer_text: Label
+@export var show_time_decimals: bool = false
 
 @onready var block_preload = preload("res://scenes/presets/grid_block.tscn")
 
@@ -14,8 +16,7 @@ var block_states: Array[bool]
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
-	var window_width: int = DisplayServer.screen_get_size().x
-	var grid_midpoint: int = (block_size * 10 + padding_px) * grid_size / 2.0
+	var grid_midpoint: int = round((block_size * 10 + padding_px) * grid_size / 2.0)
 	position.x = (640 - (182.5 * grid_size/15)) - (grid_midpoint / 2.0)
 	position.y = position.x
 	
@@ -36,11 +37,18 @@ func _ready() -> void:
 			block_states.append(false)
 			
 	$"Simulate Next Step".start(update_interval)
+	get_node("../")
 	pass
 
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta: float) -> void:
+	var time_left: String = ""
+	if show_time_decimals:
+		time_left = str(floor($"Simulate Next Step".time_left*100)/100.0)
+	else:
+		time_left = str(ceil($"Simulate Next Step".time_left))
+	sim_timer_text.text = "Next Sim In: " + time_left + "s"
 	pass
 	
 # Simulation Update
@@ -94,9 +102,9 @@ func get_block_idx_from_2d(x: int, y: int) -> int:
 	
 func get_block_2d_from_idx(idx: int) -> Vector2i:
 	var pos2d: Vector2i = Vector2i.ZERO
-	pos2d.x = floor(idx / grid_size)
+	pos2d.x = floor(idx / (grid_size * 1.0))
 	idx = idx % grid_size
-	pos2d.y = floor(idx)
+	pos2d.y = idx
 	return pos2d
 
 # Calculate the how many neighbors are alive
