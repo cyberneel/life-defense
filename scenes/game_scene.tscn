@@ -4,13 +4,14 @@
 
 [node name="Game Scene" type="Node2D"]
 
-[node name="Grid Spawner" type="Node2D" parent="." node_paths=PackedStringArray("sim_timer_text")]
+[node name="Grid Spawner" type="Node2D" parent="." node_paths=PackedStringArray("sim_timer_text", "life_points_text")]
 script = ExtResource("2_i5ch3")
 grid_size = 20
 block_size = 5
 padding_px = 5
 update_interval = 5
 sim_timer_text = NodePath("../MarginContainer/Sim Step Timer Text")
+life_points_text = NodePath("../MarginContainer3/Life Points Text")
 
 [node name="Simulate Next Step" type="Timer" parent="Grid Spawner"]
 
@@ -43,5 +44,18 @@ scale = Vector2(2.363, 2.363)
 layout_mode = 2
 text = "Skip to Next Sim: SPACE"
 horizontal_alignment = 2
+
+[node name="MarginContainer3" type="MarginContainer" parent="."]
+offset_left = 453.0
+offset_top = 8.0
+offset_right = 574.0
+offset_bottom = 31.0
+scale = Vector2(2.363, 2.363)
+
+[node name="Life Points Text" type="Label" parent="MarginContainer3"]
+layout_mode = 2
+text = "LP: 10
+"
+horizontal_alignment = 1
 
 [connection signal="timeout" from="Grid Spawner/Simulate Next Step" to="Grid Spawner" method="_on_simulate_next_step"]

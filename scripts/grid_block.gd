@@ -1,7 +1,10 @@
 extends Area2D
 
+enum BlockType {PLAYER, ENEMY_NOR, ENEMY_REP}
+
 @export_category("Grid Block")
 @export var alive_color: Color = Color(1, 0, 0)
+@export var enemy_color: Color = Color(0, 1, 0)
 @export var dead_color: Color = Color(.25, .25, .25)
 @export var hover_color: Color = Color(.5, .5, .5)
 
@@ -9,12 +12,15 @@ signal block_state_toggled(num: int, state: bool)
 
 var is_alive: bool = false
 var parentSprite: Sprite2D
+var block_type: BlockType = BlockType.PLAYER
+var grid_spawner: Node2D
 
 var mouse_hover: bool = false
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
 	parentSprite = get_parent()
+	grid_spawner = get_parent().get_parent()
 	update_state()
 	pass
 
@@ -25,10 +31,17 @@ func _process(delta: float) -> void:
 	pass
 
 func _on_input_event(viewport: Node, event: InputEvent, shape_idx: int) -> void:
-	if event.is_action_pressed("left_click"):
-		toggle_state()
+	if (block_type == BlockType.PLAYER):
+		if event.is_action_pressed("left_click"):
+			toggle_state()
 		
 func toggle_state() -> void:
+	if (!is_alive && grid_spawner.life_points <= 0):
+		return
+	if (is_alive):
+		grid_spawner.life_points += 1
+	else:
+		grid_spawner.life_points -= 1
 	is_alive = !is_alive
 	$CPUParticles2D.color_ramp.set_color(0, parentSprite.self_modulate)
 	$CPUParticles2D.emitting = true
@@ -43,13 +56,16 @@ func set_state(new_state: bool) -> void:
 		update_state()
 	
 func update_state() -> void:
-	var status_color: Color = alive_color if is_alive else (hover_color if mouse_hover else dead_color)
+	if (is_alive == false):
+		block_type = BlockType.PLAYER
+	var status_color: Color = (enemy_color if (block_type == BlockType.ENEMY_NOR) else alive_color) if is_alive else (hover_color if mouse_hover else dead_color)
 	parentSprite.self_modulate = status_color
 	if is_alive and mouse_hover:
 		parentSprite.self_modulate = parentSprite.self_modulate.darkened(.4)
 
 func _on_mouse_entered() -> void:
-	mouse_hover = true
+	if (block_type == BlockType.PLAYER):
+		mouse_hover = true
 
 func _on_mouse_exited() -> void:
 	mouse_hover = false

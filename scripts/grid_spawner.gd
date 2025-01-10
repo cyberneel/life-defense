@@ -10,6 +10,10 @@ extends Node2D
 @export var sim_timer_text: Label
 @export var show_time_decimals: bool = false
 
+@export_category("Game State")
+@export var life_points: int = 10
+@export var life_points_text: Label
+
 @onready var block_preload = preload("res://scenes/presets/grid_block.tscn")
 
 var block_states: Array[bool]
@@ -57,6 +61,8 @@ func _process(delta: float) -> void:
 	else:
 		time_left = str(ceil($"Simulate Next Step".time_left))
 	sim_timer_text.text = "Next Sim In: " + time_left + "s"
+	
+	life_points_text.text = "LP: " + str(life_points)
 	pass
 	
 # Simulation Update
