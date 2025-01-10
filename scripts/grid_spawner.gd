@@ -31,7 +31,7 @@ func _ready() -> void:
 			block.scale.y = block_size
 			block.name = str(block_num)
 			block_num += 1
-			block.get_node("Area2D").block_state_toggled.connect(_on_block_clicked)
+			block.get_node("Area2D").block_state_toggled.connect(_on_block_state_changed)
 			add_child(block)
 			block_states.append(false)
 			
@@ -45,11 +45,44 @@ func _process(delta: float) -> void:
 	
 # Simulation Update
 func _on_simulate_next_step() -> void:
-	print("Sim")
+	print("Running Sim Step")
+	var new_block_states: Array[bool] = block_states.duplicate()
+	for x in range(grid_size):
+		for y in range(grid_size):
+			var num: int = get_block_idx_from_2d(x, y)
+			var is_alive: bool = block_states[num]
+			var neighbor_count: int = get_cell_neighbors(num)
+			
+			# Alive rules
+			if is_alive:
+				# Underpopulation
+				if (neighbor_count < 2):
+					new_block_states[num] = false
+					get_child(num+1).get_child(0).is_alive = false
+					continue
+				# Sustain
+				if (neighbor_count == 2 || neighbor_count == 3):
+					new_block_states[num] = true
+					get_child(num+1).get_child(0).is_alive = true
+					continue
+				# Overpopulation
+				if (neighbor_count > 3):
+					new_block_states[num] = false
+					get_child(num+1).get_child(0).is_alive = false
+					continue
+			# Dead rules
+			else:
+				# Reproduce
+				if (neighbor_count == 3):
+					new_block_states[num] = true
+					get_child(num+1).get_child(0).is_alive = true
+					continue
+			new_block_states[num] = false;
+	block_states = new_block_states
 	pass
 	
-# When a block is clicked
-func _on_block_clicked(num: int, state: bool) -> void:
+# When a block's state is changed
+func _on_block_state_changed(num: int, state: bool) -> void:
 	block_states[num] = state
 	print(str(num) + ": " + str(state))
 	pass
@@ -65,3 +98,18 @@ func get_block_2d_from_idx(idx: int) -> Vector2i:
 	idx = idx % grid_size
 	pos2d.y = floor(idx)
 	return pos2d
+
+# Calculate the how many neighbors are alive
+func get_cell_neighbors(num: int) -> int:
+	var pos: Vector2i = get_block_2d_from_idx(num)
+	var neighbors: int = 0
+	for x in range(-1, 2):
+		for y in range(-1, 2):
+			# ignore the cell itself
+			if (x == 0 && y == 0):
+				continue
+			# check if in range
+			if (pos.x + x >= 0 && pos.y + y >= 0) and (pos.x + x < grid_size && pos.y + y < grid_size):
+				if block_states[get_block_idx_from_2d(pos.x+x, pos.y+y)]:
+					neighbors += 1
+	return neighbors
