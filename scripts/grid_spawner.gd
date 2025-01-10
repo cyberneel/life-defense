@@ -51,6 +51,10 @@ func _input(event: InputEvent) -> void:
 		$"Simulate Next Step".emit_signal("timeout")
 		$"Simulate Next Step".start()
 		print("Skipped to next step")
+	if event.is_action_pressed("harvest_all"):
+		$"Simulate Next Step".paused = true
+		harvest_all_blocks()
+		$"Simulate Next Step".paused = false
 	pass
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
@@ -80,27 +84,36 @@ func _on_simulate_next_step() -> void:
 				# Underpopulation
 				if (neighbor_count < 2):
 					new_block_states[num] = false
-					get_child(num+1).get_child(0).set_state(false)
+					get_block_node(num).set_state(false)
 					continue
 				# Sustain
 				if (neighbor_count == 2 || neighbor_count == 3):
 					new_block_states[num] = true
-					get_child(num+1).get_child(0).set_state(true)
+					get_block_node(num).set_state(true)
 					continue
 				# Overpopulation
 				if (neighbor_count > 3):
 					new_block_states[num] = false
-					get_child(num+1).get_child(0).set_state(false)
+					get_block_node(num).set_state(false)
 					continue
 			# Dead rules
 			else:
 				# Reproduce
 				if (neighbor_count == 3):
 					new_block_states[num] = true
-					get_child(num+1).get_child(0).set_state(true)
+					get_block_node(num).set_state(true)
 					continue
 			new_block_states[num] = false;
 	block_states = new_block_states
+	pass
+	
+# Handles harvesting all live player cells
+func harvest_all_blocks() -> void:
+	for x in range(grid_size):
+		for y in range(grid_size):
+			var num: int = get_block_idx_from_2d(x, y)
+			if (block_states[num]):
+				get_block_node(num).toggle_state()
 	pass
 	
 # When a block's state is changed
@@ -135,3 +148,7 @@ func get_cell_neighbors(num: int) -> int:
 				if block_states[get_block_idx_from_2d(pos.x+x, pos.y+y)]:
 					neighbors += 1
 	return neighbors
+	
+# Get block node by index
+func get_block_node(num: int) -> Area2D:
+	return get_child(num+1).get_child(0)
