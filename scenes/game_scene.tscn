@@ -20,18 +20,28 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = 11.0
-offset_top = 8.00006
-offset_right = 269.0
-offset_bottom = 31.0001
+offset_left = 10.0
+offset_top = 8.0
+offset_right = 312.0
+offset_bottom = 31.0
 grow_horizontal = 2
 grow_vertical = 2
 scale = Vector2(2.36303, 2.72768)
-size_flags_horizontal = 4
-size_flags_vertical = 4
 
 [node name="Sim Step Timer Text" type="Label" parent="MarginContainer"]
 layout_mode = 2
 text = "Next Sim in: 5s"
+
+[node name="MarginContainer2" type="MarginContainer" parent="."]
+offset_left = 557.0
+offset_top = 8.0
+offset_right = 859.0
+offset_bottom = 31.0
+scale = Vector2(2.363, 2.363)
+
+[node name="Label" type="Label" parent="MarginContainer2"]
+layout_mode = 2
+text = "Skip to Next Sim: SPACE"
+horizontal_alignment = 2
 
 [connection signal="timeout" from="Grid Spawner/Simulate Next Step" to="Grid Spawner" method="_on_simulate_next_step"]

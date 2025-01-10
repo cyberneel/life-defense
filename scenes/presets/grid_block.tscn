@@ -17,3 +17,5 @@ scale = Vector2(0.484, 0.484)
 shape = SubResource("RectangleShape2D_xnes3")
 
 [connection signal="input_event" from="Area2D" to="Area2D" method="_on_input_event"]
+[connection signal="mouse_entered" from="Area2D" to="Area2D" method="_on_mouse_entered"]
+[connection signal="mouse_exited" from="Area2D" to="Area2D" method="_on_mouse_exited"]

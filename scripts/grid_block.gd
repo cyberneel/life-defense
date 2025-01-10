@@ -3,11 +3,14 @@ extends Area2D
 @export_category("Grid Block")
 @export var alive_color: Color = Color(1, 0, 0)
 @export var dead_color: Color = Color(.25, .25, .25)
+@export var hover_color: Color = Color(.5, .5, .5)
 
 signal block_state_toggled(num: int, state: bool)
 
 var is_alive: bool = false
 var parentSprite: Sprite2D
+
+var mouse_hover: bool = false
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
@@ -31,5 +34,13 @@ func toggle_state() -> void:
 	emit_signal("block_state_toggled", parentSprite.name.to_int(), is_alive)
 	
 func update_state() -> void:
-	var status_color: Color = alive_color if is_alive else dead_color
+	var status_color: Color = alive_color if is_alive else (hover_color if mouse_hover else dead_color)
 	parentSprite.self_modulate = status_color
+	if is_alive and mouse_hover:
+		parentSprite.self_modulate = parentSprite.self_modulate.darkened(.4)
+
+func _on_mouse_entered() -> void:
+	mouse_hover = true
+
+func _on_mouse_exited() -> void:
+	mouse_hover = false

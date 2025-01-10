@@ -40,6 +40,14 @@ func _ready() -> void:
 	get_node("../")
 	pass
 
+# Process input
+func _input(event: InputEvent) -> void:
+	if event.is_action_pressed("next_sim_step"):
+		$"Simulate Next Step".stop()
+		$"Simulate Next Step".emit_signal("timeout")
+		$"Simulate Next Step".start()
+		print("Skipped to next step")
+	pass
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta: float) -> void:
