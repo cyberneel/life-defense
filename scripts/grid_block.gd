@@ -30,8 +30,17 @@ func _on_input_event(viewport: Node, event: InputEvent, shape_idx: int) -> void:
 		
 func toggle_state() -> void:
 	is_alive = !is_alive
+	$CPUParticles2D.color_ramp.set_color(0, parentSprite.self_modulate)
+	$CPUParticles2D.emitting = true
 	update_state()
 	emit_signal("block_state_toggled", parentSprite.name.to_int(), is_alive)
+	
+func set_state(new_state: bool) -> void:
+	if (is_alive != new_state):
+		is_alive = new_state
+		$CPUParticles2D.color_ramp.set_color(0, parentSprite.self_modulate)
+		$CPUParticles2D.emitting = true
+		update_state()
 	
 func update_state() -> void:
 	var status_color: Color = alive_color if is_alive else (hover_color if mouse_hover else dead_color)

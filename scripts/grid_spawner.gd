@@ -74,24 +74,24 @@ func _on_simulate_next_step() -> void:
 				# Underpopulation
 				if (neighbor_count < 2):
 					new_block_states[num] = false
-					get_child(num+1).get_child(0).is_alive = false
+					get_child(num+1).get_child(0).set_state(false)
 					continue
 				# Sustain
 				if (neighbor_count == 2 || neighbor_count == 3):
 					new_block_states[num] = true
-					get_child(num+1).get_child(0).is_alive = true
+					get_child(num+1).get_child(0).set_state(true)
 					continue
 				# Overpopulation
 				if (neighbor_count > 3):
 					new_block_states[num] = false
-					get_child(num+1).get_child(0).is_alive = false
+					get_child(num+1).get_child(0).set_state(false)
 					continue
 			# Dead rules
 			else:
 				# Reproduce
 				if (neighbor_count == 3):
 					new_block_states[num] = true
-					get_child(num+1).get_child(0).is_alive = true
+					get_child(num+1).get_child(0).set_state(true)
 					continue
 			new_block_states[num] = false;
 	block_states = new_block_states
