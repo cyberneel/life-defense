@@ -6,7 +6,9 @@
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_xnes3"]
 
 [sub_resource type="Gradient" id="Gradient_d52he"]
-colors = PackedColorArray(1, 1, 1, 1, 0.544974, 0.544974, 0.544974, 1)
+interpolation_mode = 2
+offsets = PackedFloat32Array(0, 0.623333, 1)
+colors = PackedColorArray(1, 1, 1, 1, 0.61, 0.61, 0.61, 1, 0.54, 0.54, 0.54, 0)
 
 [node name="Grid Block" type="Sprite2D"]
 scale = Vector2(10, 10)
@@ -23,6 +25,7 @@ shape = SubResource("RectangleShape2D_xnes3")
 z_index = 4096
 z_as_relative = false
 emitting = false
+lifetime = 0.5
 one_shot = true
 explosiveness = 1.0
 randomness = 0.22
