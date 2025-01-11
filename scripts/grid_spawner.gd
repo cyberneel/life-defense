@@ -50,7 +50,6 @@ func _ready() -> void:
 			
 	$"Simulate Next Step".start(update_interval)
 	$"Enemy Drop".start(enemy_drop_interval)
-	get_node("../")
 	pass
 
 # Process input
