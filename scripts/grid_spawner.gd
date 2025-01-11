@@ -9,6 +9,8 @@ extends Node2D
 @export var update_interval: int = 3
 @export var sim_timer_text: Label
 @export var show_time_decimals: bool = false
+@export var enemy_drop_interval: int = 1
+@export var enemy_spawn_sim_time: int = 5
 
 @export_category("Game State")
 @export var life_points: int = 10
@@ -17,9 +19,14 @@ extends Node2D
 @onready var block_preload = preload("res://scenes/presets/grid_block.tscn")
 
 var block_states: Array[bool]
+var sim_steps: int = 0
+
+var _blocks_child_idx_offset: int = 1
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
+	_blocks_child_idx_offset = get_child_count()
+	
 	var grid_midpoint: int = round((block_size * 10 + padding_px) * grid_size / 2.0)
 	position.x = (640 - (182.5 * grid_size/15)) - (grid_midpoint / 2.0)
 	position.y = position.x
@@ -41,6 +48,7 @@ func _ready() -> void:
 			block_states.append(false)
 			
 	$"Simulate Next Step".start(update_interval)
+	$"Enemy Drop".start(enemy_drop_interval)
 	get_node("../")
 	pass
 
@@ -72,6 +80,7 @@ func _process(delta: float) -> void:
 # Simulation Update
 func _on_simulate_next_step() -> void:
 	print("Running Sim Step")
+	sim_steps += 1
 	var new_block_states: Array[bool] = block_states.duplicate()
 	for x in range(grid_size):
 		for y in range(grid_size):
@@ -105,6 +114,48 @@ func _on_simulate_next_step() -> void:
 					continue
 			new_block_states[num] = false;
 	block_states = new_block_states
+	# Spawn enemy
+	if (sim_steps % enemy_spawn_sim_time == 0):
+		spawn_enemy_block()
+		print("Spawning Enemy")
+	pass
+	
+func spawn_enemy_block() -> void:
+	var x: int = randi_range(0, grid_size-1)
+	var block: Area2D = get_block_node(get_block_idx_from_2d(x, 0))
+	block_states[block.name.to_int()] = true
+	block.set_state(true)
+	block.block_type = 1
+	pass
+	
+# Update Enemy blocks
+func _enemy_blocks_update() -> void:
+	var enemies_pos: Array[int]
+	
+	for x in range(grid_size):
+		for y in range(grid_size):
+			if (get_block_node(get_block_idx_from_2d(x, y)).block_type != 0):
+				enemies_pos.append(get_block_idx_from_2d(x, y))
+	
+	for num in enemies_pos:
+		var block: Area2D = get_block_node(num)
+		if (block.block_type != 0):
+			var coord: Vector2i = get_block_2d_from_idx(num)
+			# Make sure block is not at bottom
+			if (coord.y < grid_size-1):
+				var new_y: int = coord.y + 1
+				var new_block: Area2D = get_block_node(get_block_idx_from_2d(coord.x, new_y))
+				# Check if bottom block is also enemy (stacking)
+				if (new_block.block_type != 0):
+					continue
+				block_states[num] = false
+				block.set_state(false)
+				block_states[new_block.name.to_int()] = true
+				new_block.set_state(true)
+				new_block.block_type = 1
+				print("move enemy down")
+			else:
+				print("enemy at bottom")
 	pass
 	
 # Handles harvesting all live player cells
@@ -151,4 +202,4 @@ func get_cell_neighbors(num: int) -> int:
 	
 # Get block node by index
 func get_block_node(num: int) -> Area2D:
-	return get_child(num+1).get_child(0)
+	return get_child(num+_blocks_child_idx_offset).get_child(0)

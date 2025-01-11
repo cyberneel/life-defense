@@ -1,6 +1,6 @@
 extends Area2D
 
-enum BlockType {PLAYER, ENEMY_NOR, ENEMY_REP}
+enum BlockType {PLAYER = 0, ENEMY_NOR = 1, ENEMY_REP = 2}
 
 @export_category("Grid Block")
 @export var alive_color: Color = Color(1, 0, 0)
