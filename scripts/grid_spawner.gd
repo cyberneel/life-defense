@@ -18,7 +18,7 @@ extends Node2D
 
 @onready var block_preload = preload("res://scenes/presets/grid_block.tscn")
 
-var block_states: Array[bool]
+# var block_states: Array[bool]
 var sim_steps: int = 0
 
 var _blocks_child_idx_offset: int = 1
@@ -45,7 +45,7 @@ func _ready() -> void:
 			block_num += 1
 			block.get_node("Area2D").block_state_toggled.connect(_on_block_state_changed)
 			add_child(block)
-			block_states.append(false)
+			# block_states.append(false)
 			
 	$"Simulate Next Step".start(update_interval)
 	$"Enemy Drop".start(enemy_drop_interval)
@@ -81,12 +81,17 @@ func _process(delta: float) -> void:
 func _on_simulate_next_step() -> void:
 	print("Running Sim Step")
 	sim_steps += 1
-	var new_block_states: Array[bool] = block_states.duplicate()
+	var old_block_states: Array[bool]
+	var new_block_states: Array[bool]
+	# Set up state arrays
+	for i in range(grid_size*grid_size):
+		new_block_states.append(false)
+		old_block_states.append(get_block_node(i).is_alive)
 	for x in range(grid_size):
 		for y in range(grid_size):
 			var num: int = get_block_idx_from_2d(x, y)
-			var is_alive: bool = block_states[num]
-			var neighbor_count: int = get_cell_neighbors(num)
+			var is_alive: bool = get_block_node(num).is_alive
+			var neighbor_count: int = get_cell_neighbors(num, old_block_states)
 			
 			# Alive rules
 			if is_alive:
@@ -113,7 +118,7 @@ func _on_simulate_next_step() -> void:
 					get_block_node(num).set_state(true)
 					continue
 			new_block_states[num] = false;
-	block_states = new_block_states
+	# block_states = new_block_states
 	# Spawn enemy
 	if (sim_steps % enemy_spawn_sim_time == 0):
 		spawn_enemy_block()
@@ -123,7 +128,7 @@ func _on_simulate_next_step() -> void:
 func spawn_enemy_block() -> void:
 	var x: int = randi_range(0, grid_size-1)
 	var block: Area2D = get_block_node(get_block_idx_from_2d(x, 0))
-	block_states[block.name.to_int()] = true
+	# block_states[block.name.to_int()] = true
 	block.set_state(true)
 	block.block_type = 1
 	pass
@@ -148,9 +153,9 @@ func _enemy_blocks_update() -> void:
 				# Check if bottom block is also enemy (stacking)
 				if (new_block.block_type != 0):
 					continue
-				block_states[num] = false
+				# block_states[num] = false
 				block.set_state(false)
-				block_states[new_block.name.to_int()] = true
+				# block_states[new_block.name.to_int()] = true
 				new_block.set_state(true)
 				new_block.block_type = 1
 				print("move enemy down")
@@ -163,13 +168,13 @@ func harvest_all_blocks() -> void:
 	for x in range(grid_size):
 		for y in range(grid_size):
 			var num: int = get_block_idx_from_2d(x, y)
-			if (block_states[num]):
+			if (get_block_node(num).is_alive):
 				get_block_node(num).toggle_state()
 	pass
 	
 # When a block's state is changed
 func _on_block_state_changed(num: int, state: bool) -> void:
-	block_states[num] = state
+	# block_states[num] = state
 	print(str(num) + ": " + str(state))
 	pass
 	
@@ -186,12 +191,12 @@ func get_block_2d_from_idx(idx: int) -> Vector2i:
 	return pos2d
 
 # Calculate the how many neighbors are alive
-func get_cell_neighbors(num: int) -> int:
+func get_cell_neighbors(num: int, block_states: Array[bool]) -> int:
 	var pos: Vector2i = get_block_2d_from_idx(num)
 	var neighbors: int = 0
 	for x in range(-1, 2):
 		for y in range(-1, 2):
-			# ignore the cell itself
+			# ignore the cell itself and enemies
 			if (x == 0 && y == 0):
 				continue
 			# check if in range
