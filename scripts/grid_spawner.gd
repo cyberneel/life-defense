@@ -8,6 +8,7 @@ extends Node2D
 @export_category("Game Settings")
 @export var update_interval: int = 3
 @export var sim_timer_text: Label
+@export var sim_timer_gradient: Gradient
 @export var show_time_decimals: bool = false
 @export var enemy_drop_interval: int = 1
 @export var enemy_spawn_sim_time: int = 5
@@ -73,6 +74,7 @@ func _process(delta: float) -> void:
 	else:
 		time_left = str(ceil($"Simulate Next Step".time_left))
 	sim_timer_text.text = "Next Sim In: " + time_left + "s"
+	sim_timer_text.add_theme_color_override("font_color", sim_timer_gradient.sample($"Simulate Next Step".time_left/update_interval))
 	
 	life_points_text.text = "LP: " + str(life_points)
 	pass

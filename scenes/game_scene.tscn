@@ -1,6 +1,10 @@
-[gd_scene load_steps=2 format=3 uid="uid://ce8amd00v6hsp"]
+[gd_scene load_steps=3 format=3 uid="uid://ce8amd00v6hsp"]
 
 [ext_resource type="Script" path="res://scripts/grid_spawner.gd" id="2_i5ch3"]
+
+[sub_resource type="Gradient" id="Gradient_j37sc"]
+offsets = PackedFloat32Array(0, 0.481481, 1)
+colors = PackedColorArray(1, 0.14, 0.168667, 1, 1, 0.796078, 0, 1, 0.364706, 1, 0, 1)
 
 [node name="Game Scene" type="Node2D"]
 
@@ -11,7 +15,8 @@ block_size = 5
 padding_px = 5
 update_interval = 6
 sim_timer_text = NodePath("../MarginContainer/Sim Step Timer Text")
-enemy_drop_interval = 2
+sim_timer_gradient = SubResource("Gradient_j37sc")
+enemy_drop_interval = 3
 life_points_text = NodePath("../MarginContainer3/Life Points Text")
 
 [node name="Simulate Next Step" type="Timer" parent="Grid Spawner"]
