@@ -8,4 +8,4 @@ Currently, the game is simple. You start off with 10 Life Points (LP) which you 
 3. Any live cell with two or three live neighbours lives, unchanged, to the next generation.
 4. Any dead cell with exactly three live neighbours comes to life.
 
-To gain Life Points (LP), remove alive player cells on the grid by clicking them. It's like harvesting them!
+To gain Life Points (LP), remove alive player cells on the grid by clicking them. It's like harvesting them! You can also quickly "Harvest All" with "C"
