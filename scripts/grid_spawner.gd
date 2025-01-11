@@ -93,6 +93,10 @@ func _on_simulate_next_step() -> void:
 			var is_alive: bool = get_block_node(num).is_alive
 			var neighbor_count: int = get_cell_neighbors(num, old_block_states)
 			
+			# ignore enemy blocks
+			if get_block_node(num).block_type != 0:
+				continue
+			
 			# Alive rules
 			if is_alive:
 				# Underpopulation
@@ -168,7 +172,8 @@ func harvest_all_blocks() -> void:
 	for x in range(grid_size):
 		for y in range(grid_size):
 			var num: int = get_block_idx_from_2d(x, y)
-			if (get_block_node(num).is_alive):
+			# Harvest only player blocks
+			if (get_block_node(num).is_alive) && get_block_node(num).block_type==0:
 				get_block_node(num).toggle_state()
 	pass
 	
@@ -197,12 +202,14 @@ func get_cell_neighbors(num: int, block_states: Array[bool]) -> int:
 	for x in range(-1, 2):
 		for y in range(-1, 2):
 			# ignore the cell itself and enemies
-			if (x == 0 && y == 0):
+			if (x == 0 && y == 0) || get_block_node(num).block_type != 0:
 				continue
 			# check if in range
 			if (pos.x + x >= 0 && pos.y + y >= 0) and (pos.x + x < grid_size && pos.y + y < grid_size):
+				# Check if neighbors is alive and ignore enemies
 				if block_states[get_block_idx_from_2d(pos.x+x, pos.y+y)]:
-					neighbors += 1
+					if get_block_node(get_block_idx_from_2d(pos.x+x, pos.y+y)).block_type == 0:
+						neighbors += 1
 	return neighbors
 	
 # Get block node by index
