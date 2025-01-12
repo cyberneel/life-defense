@@ -65,5 +65,9 @@ layout_mode = 2
 text = "LP: 10
 "
 
+[node name="Camera2D" type="Camera2D" parent="."]
+offset = Vector2(640, 640)
+ignore_rotation = false
+
 [connection signal="timeout" from="Grid Spawner/Simulate Next Step" to="Grid Spawner" method="_on_simulate_next_step"]
 [connection signal="timeout" from="Grid Spawner/Enemy Drop" to="Grid Spawner" method="_enemy_blocks_update"]

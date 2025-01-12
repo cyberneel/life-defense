@@ -23,10 +23,12 @@ extends Node2D
 var sim_steps: int = 0
 
 var _blocks_child_idx_offset: int = 1
+var camera: Camera2D
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
 	_blocks_child_idx_offset = get_child_count()
+	camera = get_node("../Camera2D")
 	
 	var grid_midpoint: int = round((block_size * 10 + padding_px) * grid_size / 2.0)
 	position.x = (640 - (182.5 * grid_size/15)) - (grid_midpoint / 2.0)
@@ -63,6 +65,7 @@ func _input(event: InputEvent) -> void:
 		$"Simulate Next Step".paused = true
 		harvest_all_blocks()
 		$"Simulate Next Step".paused = false
+		# Add camera shake
 	if event.is_action_pressed("kill_all_enemies"):
 		print("Kill All Enemies")
 		$"Simulate Next Step".paused = true
