@@ -50,13 +50,13 @@ scale = Vector2(2.363, 2.363)
 
 [node name="Label" type="Label" parent="MarginContainer2"]
 layout_mode = 2
-text = "Skip to Next Sim: SPACE           Harvest All: C"
+text = "Skip to Next Sim: SPACE       Harvest All: C       Kill All Enemies: X"
 horizontal_alignment = 2
 
 [node name="MarginContainer3" type="MarginContainer" parent="."]
 offset_left = 453.0
 offset_top = 8.0
-offset_right = 574.0
+offset_right = 630.0
 offset_bottom = 31.0
 scale = Vector2(2.363, 2.363)
 
@@ -64,7 +64,6 @@ scale = Vector2(2.363, 2.363)
 layout_mode = 2
 text = "LP: 10
 "
-horizontal_alignment = 1
 
 [connection signal="timeout" from="Grid Spawner/Simulate Next Step" to="Grid Spawner" method="_on_simulate_next_step"]
 [connection signal="timeout" from="Grid Spawner/Enemy Drop" to="Grid Spawner" method="_enemy_blocks_update"]

@@ -63,6 +63,13 @@ func _input(event: InputEvent) -> void:
 		$"Simulate Next Step".paused = true
 		harvest_all_blocks()
 		$"Simulate Next Step".paused = false
+	if event.is_action_pressed("kill_all_enemies"):
+		print("Kill All Enemies")
+		$"Simulate Next Step".paused = true
+		$"Enemy Drop".paused = true
+		kill_all_enemies()
+		$"Simulate Next Step".paused = false
+		$"Enemy Drop".paused = false
 	pass
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
@@ -75,7 +82,9 @@ func _process(delta: float) -> void:
 	sim_timer_text.text = "Next Sim In: " + time_left + "s"
 	sim_timer_text.add_theme_color_override("font_color", sim_timer_gradient.sample($"Simulate Next Step".time_left/update_interval))
 	
-	life_points_text.text = "LP: " + str(life_points)
+	var enemies_pos: Array[int]
+	var enemies_cost: int = get_enemies_pos(enemies_pos)
+	life_points_text.text = "LP: " + str(life_points) + "     ECC: " + str(-1*enemies_cost)
 	pass
 	
 # Simulation Update
@@ -92,6 +101,7 @@ func _on_simulate_next_step() -> void:
 		for y in range(grid_size):
 			var num: int = get_block_idx_from_2d(x, y)
 			var is_alive: bool = get_block_node(num).is_alive
+			var is_enemy: bool = get_block_node(num).block_type != 0
 			var neighbor_count: int = get_cell_neighbors(num, old_block_states)
 			
 			# ignore enemy blocks
@@ -142,17 +152,14 @@ func spawn_enemy_block() -> void:
 func _enemy_blocks_update() -> void:
 	var enemies_pos: Array[int]
 	
-	for x in range(grid_size):
-		for y in range(grid_size):
-			if (get_block_node(get_block_idx_from_2d(x, y)).block_type != 0):
-				enemies_pos.append(get_block_idx_from_2d(x, y))
+	get_enemies_pos(enemies_pos)
 	
 	for num in enemies_pos:
 		var block: Area2D = get_block_node(num)
 		if (block.block_type != 0):
 			var coord: Vector2i = get_block_2d_from_idx(num)
-			# Make sure block is not at bottom
-			if (coord.y < grid_size-1):
+			# Make sure block can move down
+			if (coord.y < grid_size-1 && get_block_node(get_block_idx_from_2d(coord.x, coord.y+1)).is_alive != true):
 				var new_y: int = coord.y + 1
 				var new_block: Area2D = get_block_node(get_block_idx_from_2d(coord.x, new_y))
 				# Check if bottom block is also enemy (stacking)
@@ -176,6 +183,18 @@ func harvest_all_blocks() -> void:
 			# Harvest only player blocks
 			if (get_block_node(num).is_alive) && get_block_node(num).block_type==0:
 				get_block_node(num).toggle_state()
+	pass
+	
+# Handles killing all enemies at once
+func kill_all_enemies():
+	var enemies_pos: Array[int]
+	get_enemies_pos(enemies_pos)
+	var cost: int = get_block_node(0).enemy_cost * enemies_pos.size()
+	
+	# Check if has enough life points
+	if (life_points >= cost):
+		for num in enemies_pos:
+			get_block_node(num).toggle_state()
 	pass
 	
 # When a block's state is changed
@@ -216,3 +235,11 @@ func get_cell_neighbors(num: int, block_states: Array[bool]) -> int:
 # Get block node by index
 func get_block_node(num: int) -> Area2D:
 	return get_child(num+_blocks_child_idx_offset).get_child(0)
+	
+func get_enemies_pos(enemies_pos: Array[int]) -> int:
+	enemies_pos.clear()
+	for x in range(grid_size):
+		for y in range(grid_size):
+			if (get_block_node(get_block_idx_from_2d(x, y)).block_type != 0):
+				enemies_pos.append(get_block_idx_from_2d(x, y))
+	return get_block_node(0).enemy_cost * enemies_pos.size()
